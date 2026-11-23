@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rear-View Mirror</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2f5f1; --card:#fbfcfa; --line:#c9d5cd; --ink:#17211e; --muted:#55655f;
+  --sky:#d6e6e1; --asphalt:#2a3037; --lane:#39424b; --sign:#0b5d46; --white:#f8f8f4;
+  --hazard:#f2b61f; --brake:#cf3f2e; --row:34px;
+  --head:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow","Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 18px/1.6 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--head);font-weight:700;line-height:1;margin:0}
+h2{font-size:clamp(32px,4.6vw,48px);margin-bottom:14px}
+p{max-width:60ch;margin:0 0 14px}
+section{padding:84px 0 0}
+button{font:600 17px var(--body);border:0;border-radius:8px;padding:13px 22px;background:var(--sign);color:var(--white);cursor:pointer;transition:background .2s,transform .1s}
+button:hover{background:#0e7358}
+button:active{transform:translateY(1px)}
+button.alt{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+button.alt:hover{background:#e3ebe5}
+button:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--hazard);outline-offset:2px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:5;background:#f2f5f1ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{display:flex;align-items:center;gap:10px;font:700 24px var(--head);color:var(--ink);text-decoration:none}
+.logo i{background:var(--sign);color:var(--white);border:2px solid var(--white);outline:2px solid var(--sign);border-radius:5px;font-style:normal;padding:1px 8px 2px;font-size:19px}
+nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-weight:500;font-size:16px}
+nav ul a{color:var(--muted);text-decoration:none}
+nav ul a:hover{color:var(--ink)}
+@media(max-width:700px){nav ul{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center;padding:56px 0 8px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:28px}}
+h1{font-size:clamp(46px,6.6vw,88px);letter-spacing:-.01em}
+.lede{font-size:20px;color:var(--muted);margin:22px 0 28px}
+.scene{width:100%;height:auto;display:block;border-radius:20px;border:1px solid var(--line)}
+.scene text{font-family:var(--head)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:44px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.stats div{padding:20px 22px;border-right:1px solid var(--line)}
+.stats div:last-child{border:0}
+.stats strong{display:block;font:700 clamp(38px,5vw,60px)/1 var(--head)}
+.stats span{font-size:15px;color:var(--muted);display:block;margin-top:6px}
+@media(max-width:700px){.stats{grid-template-columns:1fr}.stats div{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* demo */
+.cockpit{display:grid;grid-template-columns:1fr 1.25fr;gap:20px;margin-top:28px;align-items:start}
+@media(max-width:860px){.cockpit{grid-template-columns:1fr}}
+.view{background:var(--asphalt);color:var(--white);padding:18px 16px 20px}
+.view h3{font-size:28px;margin:0 0 2px}
+.view small{display:block;color:#aab6bd;font-size:14px;margin-bottom:14px}
+.mirror{border-radius:48% 48% 20px 20px/20% 20% 20px 20px;border:10px solid #14181c;padding-top:30px;box-shadow:inset 0 0 40px #0006}
+.mirror h3,.mirror small{text-align:center}
+.windshield{border-radius:16px;border:10px solid #14181c;border-top:12px solid var(--hazard)}
+.lanes{position:relative}
+.lane{position:absolute;left:0;right:0;height:var(--row);display:grid;grid-template-columns:134px 1fr;gap:8px;align-items:center;
+  transition:transform 1s cubic-bezier(.5,0,.2,1),opacity .6s;font-size:14px}
+.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{height:24px;background:var(--lane);border-radius:4px;position:relative;
+  background-image:repeating-linear-gradient(90deg,#ffffff30 0 10px,transparent 10px 24px);background-size:100% 2px;background-repeat:repeat-x;background-position:0 50%}
+.car{position:absolute;left:0;top:2px;bottom:2px;width:0;border-radius:3px 12px 12px 3px;background:var(--white);color:var(--ink);
+  font:600 13px/20px var(--body);text-align:right;padding-right:8px;white-space:nowrap;transition:width 1.1s cubic-bezier(.3,.7,.2,1)}
+.car.win{background:var(--hazard)}
+.car.neg{background:var(--brake);color:#fff}
+.lane.closed{opacity:.55}
+.lane.closed .track{background:none;border:2px dashed #8b979f}
+.lane.closed .car{background:none;color:#c9d2d7;width:100%!important;text-align:center;padding:0}
+.fog{position:absolute;inset:0;display:grid;place-items:center;font:700 130px var(--head);color:#ffffff1f;pointer-events:none;transition:opacity .6s}
+.fog.gone{opacity:0}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+#readout{min-height:3.4em;margin:18px 0 0;font-size:21px;font-weight:500;max-width:52ch}
+#readout b{background:var(--hazard);padding:0 6px;border-radius:3px}
+
+/* replay */
+.meter{margin-top:26px;max-width:680px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.meter .lbl{display:flex;justify-content:space-between;gap:12px;font-weight:600;margin-bottom:6px}
+.meter .lbl span:last-child{font:700 28px/1 var(--head)}
+.bar{height:22px;background:#d4dfd8;border-radius:4px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--sign);transition:width 1s}
+.bar u{position:absolute;top:0;bottom:0;width:3px;background:var(--hazard)}
+.meter p.n{font-size:15px;color:var(--muted);margin:6px 0 20px}
+.meter p.n:last-child{margin-bottom:0}
+
+/* signs */
+.signs{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:30px;margin-top:34px}
+.sign{position:relative;background:var(--sign);color:var(--white);border:3px solid var(--white);outline:5px solid var(--sign);border-radius:12px;padding:18px 16px 18px;margin:5px 5px 40px}
+.sign::after{content:"";position:absolute;left:50%;top:100%;width:12px;height:42px;background:#8d9a93;transform:translateX(-50%);z-index:-1}
+.sign h3{font-size:32px;display:flex;align-items:center;gap:14px}
+.sign span.s{display:block;font-size:15px;opacity:.85;margin-top:6px}
+.signs p{font-size:16px;margin:0 4px}
+.diamond{display:inline-grid;place-items:center;width:26px;height:26px;background:var(--hazard);color:var(--ink);transform:rotate(45deg);border-radius:3px;flex:none;margin-left:6px}
+.diamond b{transform:rotate(-45deg);font:700 17px var(--head)}
+
+/* toll */
+.toll{background:var(--asphalt);color:var(--white);padding:30px;border-radius:18px;margin-top:26px}
+.sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px}
+.sliders label{display:block;font-weight:600;font-size:15px}
+input[type=range]{width:100%;accent-color:var(--hazard)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-top:26px}
+.out div{border-top:4px solid var(--hazard);padding-top:8px}
+.out strong{display:block;font:700 52px/1 var(--head)}
+.out span{font-size:14px;color:#aab6bd}
+
+/* go */
+.go{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:26px}
+.go div{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--sign);border-radius:10px;padding:16px 18px}
+.go h3{font-size:24px;margin-bottom:4px}
+.go p{font-size:16px;margin:0;color:var(--muted)}
+
+footer{margin-top:84px;border-top:1px solid var(--line);padding:26px 0 48px;font-size:14px;color:var(--muted)}
+footer p{max-width:78ch}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top"><i>Rear-View</i>Mirror</a>
+    <ul><li><a href="#demo">Drive it</a></li><li><a href="#replay">Replay</a></li><li><a href="#signs">Signs</a></li><li><a href="#toll">Toll</a></li></ul>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
+  <header class="hero">
+    <div>
+      <h1>Last year’s winner is a view in the mirror.</h1>
+      <p class="lede">Picking last year’s top fund feels safe. It’s really steering by where you’ve already been. See what happens to the winner when the road bends.</p>
+      <button onclick="document.getElementById('demo').scrollIntoView()">Drive into next year</button>
+    </div>
+    <svg class="scene" viewBox="0 0 520 430" role="img" aria-label="A road ahead marked with a question mark, with last year’s top fund visible in a rear-view mirror">
+      <rect width="520" height="430" fill="#d6e6e1"/>
+      <circle cx="418" cy="96" r="30" fill="#f2b61f"/>
+      <path d="M0 170 L70 128 L130 160 L210 112 L300 160 L390 120 L520 170Z" fill="#b5cfc4"/>
+      <rect y="170" width="520" height="260" fill="#8fb59f"/>
+      <polygon points="242,170 278,170 470,430 50,430" fill="#2a3037"/>
+      <line x1="242" y1="170" x2="50" y2="430" stroke="#f8f8f4" stroke-width="3"/>
+      <line x1="278" y1="170" x2="470" y2="430" stroke="#f8f8f4" stroke-width="3"/>
+      <path id="dashes" fill="#f2b61f"/>
+      <text x="260" y="300" text-anchor="middle" font-size="120" font-weight="700" fill="#ffffff2e">?</text>
+      <rect x="252" y="118" width="16" height="30" fill="#14181c"/>
+      <rect x="120" y="20" width="280" height="104" rx="42" fill="#14181c"/>
+      <rect x="130" y="30" width="260" height="84" rx="34" fill="#415158"/>
+      <polygon points="150,30 205,30 170,114 130,114" fill="#fff" opacity=".07"/>
+      <text x="260" y="56" text-anchor="middle" font-size="16" font-weight="600" fill="#cfd9d5">Last year’s #1 fund</text>
+      <text id="mName" x="260" y="86" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">…</text>
+      <text id="mVal" x="260" y="107" text-anchor="middle" font-size="17" font-weight="600" fill="#f2b61f"></text>
+    </svg>
+  </header>
+
+  <div class="stats" aria-live="polite">
+    <div><strong id="s1">–</strong><span>of top-quartile funds stay top-quartile next year. Chance alone gives 25%.</span></div>
+    <div><strong id="s2">–</strong><span>of last year’s #1 funds are #1 again.</span></div>
+    <div><strong id="s3">–</strong><span>of 20 years of growth goes to a 1.5% yearly fee.</span></div>
+  </div>
+
+  <section id="demo" aria-labelledby="demo-h">
+    <h2 id="demo-h">Drive into next year</h2>
+    <p>Twelve simulated funds. The mirror shows last year. The windshield stays blank until you look ahead.</p>
+    <div class="cockpit">
+      <div class="view mirror" role="group" aria-label="Last year’s results">
+        <h3>Last year</h3><small>Ranked best to worst</small>
+        <div class="lanes" id="mirror"></div>
+      </div>
+      <div class="view windshield" role="group" aria-label="Next year’s results">
+        <h3>Next year</h3><small>Same funds, new road</small>
+        <div class="lanes" id="shield"><div class="fog" id="fog">?</div></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="look">Look ahead</button>
+      <button id="again" class="alt">New market</button>
+    </div>
+    <p id="readout" aria-live="polite">Press <b>Look ahead</b> to see where last year’s #1 finishes.</p>
+  </section>
+
+  <section id="replay" aria-labelledby="replay-h">
+    <h2 id="replay-h">One trip could be luck. Replay 2,000.</h2>
+    <p>The server re-runs two-year trips across 40 funds. If winners really stayed winners, the bars would run far past the yellow chance line.</p>
+    <div class="controls"><button id="replay">Replay 2,000 futures</button></div>
+    <div class="meter" id="meter" hidden>
+      <div class="lbl"><span>Top-quartile funds that stay top-quartile</span><span id="m1"></span></div>
+      <div class="bar"><i id="b1"></i><u style="left:25%"></u></div>
+      <p class="n">Chance alone gives 25%.</p>
+      <div class="lbl"><span>Last year’s #1 that is #1 again</span><span id="m2"></span></div>
+      <div class="bar"><i id="b2"></i><u style="left:2.5%"></u></div>
+      <p class="n" id="m3"></p>
+    </div>
+  </section>
+
+  <section id="signs" aria-labelledby="signs-h">
+    <h2 id="signs-h">Four signs the mirror can’t show</h2>
+    <div class="signs">
+      <div><div class="sign"><h3>Sharp curve<span class="diamond"><b>!</b></span></h3><span class="s">Mean reversion</span></div>
+        <p>Hot streaks cool off. A fund that won on one bet is usually back in the pack when the road bends.</p></div>
+      <div><div class="sign"><h3>Fog<span class="diamond"><b>!</b></span></h3><span class="s">Survivorship bias</span></div>
+        <p>Failed funds get merged or closed and drop off the list. Rankings show only the cars that made it.</p></div>
+      <div><div class="sign"><h3>Toll<span class="diamond"><b>!</b></span></h3><span class="s">Fees and taxes</span></div>
+        <p>Costs are charged every year, win or lose. A small fee compounds into a big bill. Try it below.</p></div>
+      <div><div class="sign"><h3>Late exit<span class="diamond"><b>!</b></span></h3><span class="s">Behavior gap</span></div>
+        <p>Many people buy after the climb and sell after the fall, so they earn less than the fund reports.</p></div>
+    </div>
+  </section>
+
+  <section id="toll" aria-labelledby="toll-h">
+    <h2 id="toll-h">The toll booth</h2>
+    <p>Move the sliders to see how much of every 100 invested a yearly fee takes.</p>
+    <div class="toll">
+      <div class="sliders">
+        <label>Return before fees: <output id="vg">10</output>% a year<input type="range" id="g" min="2" max="15" step=".5" value="10"></label>
+        <label>Yearly fee: <output id="vf">1.5</output>%<input type="range" id="f" min="0" max="3" step=".1" value="1.5"></label>
+        <label>Years invested: <output id="vy">20</output><input type="range" id="y" min="5" max="40" value="20"></label>
+      </div>
+      <div class="out">
+        <div><strong id="o1">–</strong><span>100 grows to, before fees</span></div>
+        <div><strong id="o2">–</strong><span>100 grows to, after fees</span></div>
+        <div><strong id="o3">–</strong><span>of growth paid to the toll booth</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="go-h">
+    <h2 id="go-h">Look ahead instead</h2>
+    <div class="go">
+      <div><h3>Check costs</h3><p>Fees are the one thing you can know in advance.</p></div>
+      <div><h3>Spread out</h3><p>Mix funds and asset types so one curve can’t wreck the trip.</p></div>
+      <div><h3>Match your goal</h3><p>Choose by time horizon and risk, not last year’s rank.</p></div>
+      <div><h3>Stay the course</h3><p>Resist chasing the hottest fund after it has already run.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>All data on this page is simulated for education. Each fund’s return = market + style bet × this year’s fashionable theme + small skill + noise. The theme is redrawn every year, so last year’s leaders were mostly last year’s lucky bets. For real-world evidence, see the S&amp;P SPIVA Persistence Scorecard. Past performance is not indicative of future results. This is not financial advice.</p>
+  </footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s), ROW = 34;
+const fmt = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+const pos = v => Math.max(8, Math.min(100, (v + 30) / 90 * 100));
+let data, rows = [], byR1 = [], done = false;
+
+/* hero road: dashes rush toward the viewer (static if reduced motion) */
+const dashEl = $('#dashes'); let off = 0;
+function dashes() {
+  const H = 170, B = 430, N = 9, p = [];
+  const f = z => [H + (B - H) * Math.pow(z, 2.2), 1 + 10 * Math.pow(z, 2.2)];
+  for (let i = 0; i < N; i++) {
+    const z0 = ((i + off) % N) / N, [y0, w0] = f(z0), [y1, w1] = f(Math.min(z0 + .045, 1));
+    p.push(`M${260 - w0 / 2},${y0}L${260 + w0 / 2},${y0}L${260 + w1 / 2},${y1}L${260 - w1 / 2},${y1}Z`);
+  }
+  dashEl.setAttribute('d', p.join(''));
+}
+dashes();
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  (function tick() { off += .01; dashes(); requestAnimationFrame(tick); })();
+}
+
+function build(el, funds) {
+  el.querySelectorAll('.lane').forEach(n => n.remove());
+  el.style.height = funds.length * ROW + 'px';
+  return funds.map((f, i) => {
+    const d = document.createElement('div');
+    d.className = 'lane';
+    d.innerHTML = '<span class="nm"></span><div class="track"><i class="car"></i></div>';
+    d.querySelector('.nm').textContent = f.name;
+    d.style.transform = `translateY(${i * ROW}px)`;
+    el.appendChild(d);
+    return d;
+  });
+}
+function setCar(lane, v, win) {
+  const c = lane.querySelector('.car');
+  c.className = 'car' + (win ? ' win' : v < 0 ? ' neg' : '');
+  c.style.width = pos(v) + '%';
+  c.textContent = fmt(v);
+}
+
+async function load() {
+  done = false;
+  $('#look').disabled = false;
+  $('#fog').classList.remove('gone');
+  $('#readout').innerHTML = 'Press <b>Look ahead</b> to see where last year’s #1 finishes.';
+  data = await (await fetch('/api/season?seed=' + Math.floor(Math.random() * 1e9))).json();
+  byR1 = [...data.funds].sort((a, b) => a.r1 - b.r1);
+  const m = build($('#mirror'), byR1);
+  byR1.forEach((f, i) => setTimeout(() => setCar(m[i], f.y1, f.r1 === 1), 60));
+  rows = build($('#shield'), byR1);
+  $('#mName').textContent = byR1[0].name;
+  $('#mVal').textContent = fmt(byR1[0].y1) + ' last year';
+}
+
+function look() {
+  if (done) return;
+  done = true; $('#look').disabled = true;
+  $('#fog').classList.add('gone');
+  byR1.forEach((f, i) => {
+    if (f.closed) {
+      rows[i].classList.add('closed');
+      rows[i].querySelector('.car').textContent = 'closed: removed from rankings';
+    } else setCar(rows[i], f.y2, false);
+  });
+  setTimeout(() => {
+    const survivors = byR1.filter(f => !f.closed).sort((a, b) => a.r2 - b.r2);
+    [...survivors, ...byR1.filter(f => f.closed)].forEach((f, k) => {
+      const lane = rows[byR1.indexOf(f)];
+      lane.style.transform = `translateY(${k * ROW}px)`;
+      lane.querySelector('.nm').textContent = (f.r2 ? f.r2 + '. ' : '') + f.name;
+      if (f.r2 === 1) lane.querySelector('.car').classList.add('win');
+    });
+    const w = byR1[0];
+    $('#readout').innerHTML = w.closed
+      ? `Last year’s #1, <b>${w.name}</b>, closed. The new rankings pretend it never existed.`
+      : `Last year’s #1, <b>${w.name}</b>, finished <b>#${w.r2} of ${data.survivors}</b>. The mirror showed ${fmt(w.y1)}. The road gave ${fmt(w.y2)}.`;
+  }, 1300);
+}
+
+async function worlds(n) { return (await fetch('/api/worlds?n=' + n)).json(); }
+
+async function replay() {
+  $('#replay').disabled = true; $('#replay').textContent = 'Driving…';
+  const r = await worlds(2000);
+  $('#meter').hidden = false;
+  $('#m1').textContent = r.top_quartile_stays + '%';
+  $('#m2').textContent = r.number_one_repeats + '%';
+  requestAnimationFrame(() => { $('#b1').style.width = r.top_quartile_stays + '%'; $('#b2').style.width = r.number_one_repeats + '%'; });
+  $('#m3').textContent = `Chance alone gives ${(100 / r.funds).toFixed(1)}%. The typical past #1 landed around the ${r.winner_median_percentile}th percentile next year: a little better than average, nowhere near a guarantee.`;
+  $('#replay').disabled = false; $('#replay').textContent = 'Replay again';
+}
+
+let t;
+function toll() {
+  const g = $('#g').value, f = $('#f').value, y = $('#y').value;
+  $('#vg').textContent = g; $('#vf').textContent = f; $('#vy').textContent = y;
+  clearTimeout(t);
+  t = setTimeout(async () => {
+    const r = await (await fetch(`/api/fees?gross=${g}&fee=${f}&years=${y}`)).json();
+    $('#o1').textContent = r.before.toFixed(0); $('#o2').textContent = r.after.toFixed(0);
+    $('#o3').textContent = r.lost_pct + '%';
+  }, 120);
+}
+
+$('#look').onclick = look; $('#again').onclick = load; $('#replay').onclick = replay;
+['g', 'f', 'y'].forEach(id => $('#' + id).oninput = toll);
+load(); toll();
+worlds(1000).then(r => { $('#s1').textContent = r.top_quartile_stays + '%'; $('#s2').textContent = r.number_one_repeats + '%'; });
+fetch('/api/fees?gross=8&fee=1.5&years=20').then(r => r.json()).then(r => $('#s3').textContent = r.lost_pct + '%');
+</script>
+</body>
+</html>
