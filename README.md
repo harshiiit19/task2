@@ -39,27 +39,11 @@ pytest -q
 | `GET /api/worlds?n=2000&funds=40` | Replays `n` futures; returns how often top-quartile funds and the #1 fund repeat. |
 | `GET /api/fees?gross=&fee=&years=&amount=` | Growth before and after a yearly fee. Inputs are validated (invalid values return 422). |
 
-## Simulation model
 
-```
-fund return = market + style_bet × this_year's_theme + small_skill + noise
-```
-
-The "theme" (what's fashionable) is redrawn every year, so last year's leaders were mostly last year's lucky bets. Skill is deliberately small, so a modest edge for past winners exists but is far from a guarantee.
+The "theme" (what's fashionable) resets each year, so last year's leaders were mostly last year's lucky bets. Skill is deliberately small, so past winners have a modest edge, but it's far from a guarantee.
 
 All data is **simulated for education**. For real evidence, see the S&P SPIVA Persistence Scorecard.
 
-## Structure
-
-```
-rearview/
-├── main.py              # FastAPI app and simulation
-├── static/index.html    # Page: HTML, CSS and JS in one file
-├── test_api.py          # pytest suite
-├── requirements.txt
-├── requirements-dev.txt
-└── README.md
-```
 
 ## Disclaimer
 
